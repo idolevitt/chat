@@ -1,0 +1,49 @@
+@startuml
+class Server{
+    List<ClientHandler>
+    ServerSocket server
+    Socket socket
+    ClientHandler client
+
+    turnOff()
+
+}
+class ClientHandler extends Thread{
+    Socket socket
+    DataStreamOutput dos
+    DataStreamInput dis
+    Boolean isLoggedIn
+    private name
+    Date date
+
+    greetClient
+    online()
+    broadcast()
+    Time()
+    message()
+
+}
+Message -- Client:object
+Message -- ClientHandler:object
+
+Client --> Server:initializing socket
+Server --> ClientHandler:passing on socket
+Client -> ClientHandler:socket
+Client <- ClientHandler:socket
+
+
+class Client{
+    Socket socket
+    DataStreamOutput dos
+    DataStreamInput dis
+
+}
+class Message{
+    String sender
+    String target
+    Date date
+
+    getDate()
+    getTime()
+}
+@enduml
