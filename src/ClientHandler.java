@@ -11,6 +11,7 @@ public class ClientHandler extends Thread{
     String name;
     Date date;
 
+    //TODO: Message class.
     //constructor
     ClientHandler(Socket socket){
 
