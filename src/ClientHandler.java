@@ -1,3 +1,5 @@
+import message.*;
+
 import java.net.*;
 import java.io.*;
 import java.util.*;
@@ -6,13 +8,18 @@ public class ClientHandler extends Thread{
 
     Socket socket;
     ObjectOutputStream output;
-    ObjectInputStream input;
+    DataInputStream dis;
     Boolean isLoggedIn;
     String name;
     Date date;
 
-    //TODO: Message class.
-    //constructor
+    //TODO: message.Message class.
+
+    /**
+     * constructor
+     *
+     * @param socket
+     */
     ClientHandler(Socket socket){
 
         this.socket = socket;
@@ -20,56 +27,126 @@ public class ClientHandler extends Thread{
 
         try {
             output = new ObjectOutputStream(socket.getOutputStream());
-            input = new ObjectInputStream(socket.getInputStream());
-            output.writeObject("Welcome! what's your name?");
-            name = input.readObject().toString();
+            dis = new DataInputStream(socket.getInputStream());
+            output.writeObject(new WelcomeMessage());
+            name = dis.readUTF();
         }
         catch (IOException i){
             i.printStackTrace();
-        }
-        catch (ClassNotFoundException c){
-            System.out.println("ERROR: class not Found");
         }
 
         isLoggedIn = true;
     }
 
-    //returns a string with all the online clients
-    public void online(List<ClientHandler> clients){
+    @Override
+    public void run() {
 
-        String onlineClients = "";
-        int count = 0;
-        for(ClientHandler client : clients){
-            if(count == 3){
-                onlineClients += "\n";
-                count = 0;
+        String msg;
+
+        while(true){
+
+            try{
+                msg = dis.readUTF();
+                classification(msg);
+
             }
-            onlineClients += client + "\t";
-            count++;
+            catch (IOException i){
+                i.printStackTrace();
+            }
         }
+    }
+
+    public void classification(String msg) throws IOException{
+
+        String recipientName;
+        String text;
+        ClientHandler recipient;
+
+        if (msg.equals("/time"))
+            time();
+        if (msg.equals("/online"))
+            online();
+        if (msg.endsWith("@all"))
+            broadcast(msg.substring(0,msg.length() - "@all".length()));
+        if (msg.lastIndexOf("@") == -1)
+            error();
+        else {
+            recipientName = msg.substring(msg.lastIndexOf("@"));
+            text = msg.substring(0, msg.lastIndexOf("@"));
+            recipient = Server.findClient(recipientName);
+            if (recipient == null)
+                output.writeObject(new ErrorMessage());
+            else
+                sendMessage(text, recipient);
+
+
+
+        }
+
+    }
+
+    /**
+     * Returns a string with all the online clients.
+     *
+     * @throws IOException
+     */
+    public void online() throws IOException{
+
+        List<String> clientsNames = new LinkedList<>();
+
+        for (ClientHandler client : Server.getClients()) {
+            if (client.isLoggedIn){
+                clientsNames.add(client.name);
+            }
+        }
+
         System.out.println("sending " + name + " a list of all the online clients");
-        output.writeObject(Message(onlineClients));
+        output.writeObject(new OnlineClientsMessage(clientsNames));
     }
 
-    //sends a broadcast message to all clients
-    public void broadcast(Message msg, List<ClientHandler> clients) throws IOException{
-        for(ClientHandler client : clients){
-            if(!client.name.equals(this.name))
-                client.output.writeObject(msg);
+    /**
+     * Sends a broadcast message to all clients
+     *
+     * @param text
+     * @throws IOException
+     */
+    public void broadcast(String text) throws IOException {
+        for (ClientHandler client : Server.getClients()) {
+            if (!client.name.equals(this.name))
+                sendMessage(text, client);
         }
     }
 
-    //sends the current time to the client
-    public void time(Date date)throws IOException{
-        output.writeObject(Message(date.toString()));
+    /**
+     * Sends the current time to the client
+     *
+     * @throws IOException
+     */
+    public void time()throws IOException{
+        output.writeObject(new DateMessage());
     }
 
-    public void sendMessage(Message msg){
-        String recipient;
+    /**
+     * Sends a private message
+     *
+     * @param text
+     * @param recipient
+     * @throws IOException
+     */
+    public void sendMessage(String text, ClientHandler recipient) throws IOException{
+
+        recipient.output.writeObject(new PrivateMessage(this.name, text));
     }
 
-    public void messageHandler(Message msg){
 
+    /**
+     * Sends an error message to the client
+     *
+     * @throws IOException
+     */
+    public void error() throws IOException{
+
+        output.writeObject(new ErrorMessage());
     }
 
 }

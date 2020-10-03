@@ -1,0 +1,82 @@
+@startuml
+class Server{
+    final int PORT
+    List<ClientHandler>
+    ServerSocket server
+    Socket socket
+    ClientHandler client
+
+    turnOff()
+    getClients()
+
+}
+class ClientHandler extends Thread{
+    Socket socket
+    DataStreamOutput output
+    DataStreamInput input
+    Boolean isLoggedIn
+    private name
+    Date date
+
+    online()
+    broadcast()
+    Time()
+    sendMessage()
+
+}
+message.PrivateMessage -- ClientHandler:object
+message.OnlineClientsMessage -- ClientHandler:object
+message.DateMessage -- ClientHandler:object
+
+message.UserMessage -- Client
+
+Client --> Server:initializing socket
+Server --> ClientHandler:passing on the socket
+Client -> ClientHandler:socket
+Client <- ClientHandler:socket
+
+
+class Client{
+
+    final static String IP = "127.0.0.1";
+    final static int PORT = 5000;
+    Scanner scn;
+    Socket socket
+    ObjectOutputStream output;
+    ObjectInputStream input;
+    Thread receiveMessage
+    Thread sendMessage
+
+}
+class message.Message{
+    Date date
+
+    public abstract void handleMessage()
+}
+
+class message.DateMessage extends message.Message{
+    handleMessage()
+}
+
+class message.OnlineClientsMessage extends message.Message{
+
+    List<String> clients
+
+    handleMessage()
+}
+
+class message.PrivateMessage extends message.Message{
+
+    String sender;
+    String text;
+
+    handleMessage()
+}
+
+class message.UserMessage extends message.Message{
+
+    String text
+
+    handleMessage()
+}
+@enduml

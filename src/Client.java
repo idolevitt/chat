@@ -1,3 +1,7 @@
+import message.DateMessage;
+import message.Message;
+import message.OnlineClientsMessage;
+
 import java.net.*;
 import java.io.*;
 import java.util.Scanner;
@@ -8,20 +12,20 @@ public class Client {
     final static int PORT = 5000;
     static Scanner scn;
     static Socket socket;
-    static ObjectOutputStream output;
+    static DataOutputStream dos;
     static ObjectInputStream input;
 
     public static void disconnect() throws IOException{
 
-        Message logOut = new Message("logOut");
-        output.writeObject(logOut);
+        dos.writeUTF("logout");
 
-        output.close();
+        dos.close();
         input.close();
         socket.close();
         scn.close();
 
     }
+
 
     public static void main(String[] args) throws IOException{
 
@@ -29,10 +33,15 @@ public class Client {
 
         System.out.println("Connecting to server");
         socket = new Socket(IP,PORT);
-        output = new ObjectOutputStream(socket.getOutputStream());
+        dos = new DataOutputStream(socket.getOutputStream());
+        System.out.println("before");
         input = new ObjectInputStream(socket.getInputStream());
+        System.out.println("after");
         System.out.println("Connected");
 
+        /**
+         * Sending messages to the server
+         */
         Thread sendMsg = new Thread(new Runnable() {
             @Override
             public void run() {
@@ -49,21 +58,32 @@ public class Client {
                         }
                     }
                     else{
-                        output.writeObject(new Message(line));
+                        try{
+                            dos.writeUTF(line);
+                        }
+                        catch (IOException i){
+                            i.printStackTrace();
+                        }
+
                     }
                 }
 
             }
         });
-        //TODO: fix read message from obeject stream
+
+
+
+        /**
+         * Waiting for messages from the server
+         */
         Thread receiveMsg = new Thread(new Runnable() {
             @Override
             public void run() {
 
                 while (true){
                     try {
-                        Message msg = input.readObject();
-                        System.out.println(msg.toString());
+                        Message msg = (Message) input.readObject();
+                        msg.handleMessage();
                     }
                     catch (IOException i){
                         i.printStackTrace();
@@ -78,7 +98,8 @@ public class Client {
         });
 
         sendMsg.start();
-        sendMsg.start();
+        receiveMsg.start();
 
     }
+
 }

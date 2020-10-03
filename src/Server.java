@@ -5,7 +5,20 @@ import java.util.*;
 public class Server{
 
     final static int PORT = 5000;
-    static List<ClientHandler> clients = new LinkedList<>();
+    private static List<ClientHandler> clients = new LinkedList<>();
+
+    public static List<ClientHandler> getClients() {
+        return clients;
+    }
+
+    public static ClientHandler findClient(String name){
+
+        for (ClientHandler client : clients  ) {
+            if(client.name.equals(name))
+                return client;
+        }
+        return null;
+    }
 
     public static void main(String[] args) throws IOException{
         //initializing server
@@ -22,6 +35,8 @@ public class Server{
             ClientHandler client = new ClientHandler(socket);
 
             clients.add(client);
+
+            client.start();
         }
     }
 
