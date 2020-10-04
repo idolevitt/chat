@@ -1,8 +1,9 @@
 package message;
 
+import java.io.Serializable;
 import java.util.*;
 
-public abstract class Message {
+public abstract class Message implements Serializable {
 
     Date date;
 

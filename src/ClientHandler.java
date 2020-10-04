@@ -13,7 +13,6 @@ public class ClientHandler extends Thread{
     String name;
     Date date;
 
-    //TODO: message.Message class.
 
     /**
      * constructor
@@ -26,7 +25,9 @@ public class ClientHandler extends Thread{
         date = new Date();
 
         try {
+            System.out.println("before");
             output = new ObjectOutputStream(socket.getOutputStream());
+            System.out.println("after");
             dis = new DataInputStream(socket.getInputStream());
             output.writeObject(new WelcomeMessage());
             name = dis.readUTF();
@@ -56,6 +57,12 @@ public class ClientHandler extends Thread{
         }
     }
 
+    /**
+     * Classify the type of message and sends it to its recipient
+     *
+     * @param msg
+     * @throws IOException
+     */
     public void classification(String msg) throws IOException{
 
         String recipientName;
@@ -64,21 +71,28 @@ public class ClientHandler extends Thread{
 
         if (msg.equals("/time"))
             time();
-        if (msg.equals("/online"))
+        else if (msg.equals("/help"))
+            output.writeObject(new HelpMessage());
+        else if (msg.equals("/online"))
             online();
-        if (msg.endsWith("@all"))
+        else if (msg.endsWith("@all"))
             broadcast(msg.substring(0,msg.length() - "@all".length()));
-        if (msg.lastIndexOf("@") == -1)
+        else if (msg.lastIndexOf("@") == -1) {
             error();
+        }
         else {
-            recipientName = msg.substring(msg.lastIndexOf("@"));
+            recipientName = msg.substring(msg.lastIndexOf("@") + 1);
             text = msg.substring(0, msg.lastIndexOf("@"));
             recipient = Server.findClient(recipientName);
-            if (recipient == null)
+            System.out.println("before: " + recipientName);
+            if (recipient == null) {
                 output.writeObject(new ErrorMessage());
-            else
+                System.out.println("if");
+            }
+            else {
                 sendMessage(text, recipient);
-
+                System.out.println("else");
+            }
 
 
         }

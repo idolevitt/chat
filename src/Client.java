@@ -15,6 +15,11 @@ public class Client {
     static DataOutputStream dos;
     static ObjectInputStream input;
 
+    /**
+     * Disconnects the client and informs the server
+     *
+     * @throws IOException
+     */
     public static void disconnect() throws IOException{
 
         dos.writeUTF("logout");

@@ -1,5 +1,6 @@
 package message;
 
+
 public class WelcomeMessage extends Message {
 
     public void handleMessage(){
