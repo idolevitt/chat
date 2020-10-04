@@ -27,6 +27,7 @@ class ClientHandler extends Thread{
 message.PrivateMessage -- ClientHandler:object
 message.OnlineClientsMessage -- ClientHandler:object
 message.DateMessage -- ClientHandler:object
+message.WelcomeMessage -- ClientHandler:object
 
 message.UserMessage -- Client
 
@@ -66,6 +67,14 @@ class message.OnlineClientsMessage extends message.Message{
 }
 
 class message.PrivateMessage extends message.Message{
+
+    String sender;
+    String text;
+
+    handleMessage()
+}
+
+class message.WelcomeMessage extends message.Message{
 
     String sender;
     String text;
