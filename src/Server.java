@@ -6,7 +6,7 @@ public class Server{
 
     static Server serverInstance;
 
-    final static int PORT = 5000;
+    final static int PORT = 9000;
     private List<ClientHandler> clients;
     private ServerSocket serverSocket;
     private Socket socket;
@@ -18,7 +18,7 @@ public class Server{
     public void removeClient(ClientHandler client){
         String name = client.name;
         clients.remove(client);
-        System.out.println(name + " disconnected");
+        System.out.println(name + " has disconnected");
     }
 
     public ClientHandler findClient(String name){

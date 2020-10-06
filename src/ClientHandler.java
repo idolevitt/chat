@@ -31,7 +31,7 @@ public class ClientHandler extends Thread{
             output = new ObjectOutputStream(socket.getOutputStream());
             System.out.println("after");
             dis = new DataInputStream(socket.getInputStream());
-            output.writeObject(new WelcomeMessage());
+            output.writeObject(new CostumMessage("welcome! what's your name?"));
             name = dis.readUTF();
             while(name.equals("all") || server.findClient(name) != null){
                 output.writeObject(new CostumMessage("Name taken / invalid, pick another name"));
@@ -59,7 +59,10 @@ public class ClientHandler extends Thread{
 
             }
             catch (IOException i){
-                i.printStackTrace();
+                try {
+                    disconnect();
+                } catch (IOException e) { }
+                
             }
         }
     }

@@ -1,6 +1,4 @@
-import message.DateMessage;
-import message.Message;
-import message.OnlineClientsMessage;
+import message.*;
 
 import java.net.*;
 import java.io.*;
@@ -8,28 +6,21 @@ import java.util.Scanner;
 
 public class Client {
 
-    final static String IP = "127.0.0.1";
-    final static int PORT = 5000;
+    final static String IP = "109.186.178.254";
+    final static int PORT = 9000;
     static Scanner scn;
     static Socket socket;
     static DataOutputStream dos;
     static ObjectInputStream input;
+    static Thread sendMsg;
+    static Thread receiveMsg;
+    static Boolean isOnline;
 
     /**
      * Disconnects the client and informs the server
      *
      * @throws IOException
      */
-    public static void disconnect() throws IOException{
-
-        dos.writeUTF("logout");
-
-        dos.close();
-        input.close();
-        socket.close();
-        scn.close();
-
-    }
 
 
     public static void main(String[] args) throws IOException{
@@ -43,24 +34,21 @@ public class Client {
         input = new ObjectInputStream(socket.getInputStream());
         System.out.println("after");
         System.out.println("Connected");
+        isOnline = true;
 
         /**
          * Sending messages to the server
          */
-        Thread sendMsg = new Thread(new Runnable() {
+        sendMsg = new Thread(new Runnable() {
             @Override
             public void run() {
-                while (true){
+                while (isOnline){
 
                     String line = scn.nextLine();
                     if(line.toLowerCase().equals("log out")||
                             line.toLowerCase().equals("disconnect")){
-                        try {
-                            disconnect();
-                        }
-                        catch (IOException i){
-                            i.printStackTrace();
-                        }
+                        isOnline = false;
+
                     }
                     else{
                         try{
@@ -72,31 +60,45 @@ public class Client {
 
                     }
                 }
-
+                try {
+                    dos.writeUTF("logout");
+                    dos.close();
+                    scn.close();
+                    System.out.println("logged out");
+                }catch (IOException i){
+                    i.printStackTrace();
+                }
             }
         });
+
 
 
 
         /**
          * Waiting for messages from the server
          */
-        Thread receiveMsg = new Thread(new Runnable() {
+        receiveMsg = new Thread(new Runnable() {
             @Override
             public void run() {
 
-                while (true){
+                while (isOnline){
                     try {
                         Message msg = (Message) input.readObject();
                         msg.handleMessage();
                     }
                     catch (IOException i){
-                        i.printStackTrace();
+                        //i.printStackTrace();
                     }
                     catch (ClassNotFoundException c){
                         c.printStackTrace();
                     }
 
+                }
+                try {
+                    input.close();
+                    socket.close();
+                }catch (IOException i){
+                    i.printStackTrace();
                 }
 
             }
