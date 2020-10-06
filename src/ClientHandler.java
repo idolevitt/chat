@@ -44,7 +44,7 @@ public class ClientHandler extends Thread{
 
         String msg;
 
-        while(true){
+        while(isLoggedIn){
 
             try{
                 msg = dis.readUTF();
@@ -69,7 +69,10 @@ public class ClientHandler extends Thread{
         String text;
         ClientHandler recipient;
 
-        if (msg.equals("/time"))
+        if(msg.equals("logout")){
+            disconnect();
+        }
+        else if (msg.equals("/time"))
             time();
         else if (msg.equals("/help"))
             output.writeObject(new HelpMessage());
@@ -97,6 +100,18 @@ public class ClientHandler extends Thread{
 
         }
 
+    }
+
+    /**
+     * disconnect the current client
+     */
+    private void disconnect() throws IOException{
+        isLoggedIn = false;
+        output.close();
+        dis.close();
+        socket.close();
+
+        Server.removeClient(this);
     }
 
     /**

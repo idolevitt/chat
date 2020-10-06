@@ -5,13 +5,19 @@ import java.util.*;
 public class Server{
 
     final static int PORT = 5000;
-    private static List<ClientHandler> clients = new LinkedList<>();
+    private List<ClientHandler> clients = new LinkedList<>();
 
-    public static List<ClientHandler> getClients() {
+    public List<ClientHandler> getClients() {
         return clients;
     }
 
-    public static ClientHandler findClient(String name){
+    public void removeClient(ClientHandler client){
+        String name = client.name;
+        clients.remove(client);
+        System.out.println(name + " disconnected");
+    }
+
+    public ClientHandler findClient(String name){
 
         for (ClientHandler client : clients  ) {
             if(client.name.equals(name))
@@ -20,7 +26,9 @@ public class Server{
         return null;
     }
 
-    public static void main(String[] args) throws IOException{
+
+
+    public void main(String[] args) throws IOException{
         //initializing server
         ServerSocket server = new ServerSocket(PORT);
 
