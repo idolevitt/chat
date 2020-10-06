@@ -4,8 +4,12 @@ import java.util.*;
 
 public class Server{
 
+    static Server serverInstance;
+
     final static int PORT = 5000;
-    private List<ClientHandler> clients = new LinkedList<>();
+    private List<ClientHandler> clients;
+    private ServerSocket serverSocket;
+    private Socket socket;
 
     public List<ClientHandler> getClients() {
         return clients;
@@ -26,23 +30,37 @@ public class Server{
         return null;
     }
 
-
-
-    public void main(String[] args) throws IOException{
+    private Server() throws IOException{
         //initializing server
-        ServerSocket server = new ServerSocket(PORT);
+        clients = new LinkedList<>();
+        serverSocket = new ServerSocket(PORT);
 
-        Socket socket;
+
+    }
+
+    public static Server getInstance() throws IOException{
+
+        if (serverInstance == null)
+            return new Server();
+        else
+            return serverInstance;
+    }
+
+
+
+    public static void main(String[] args) throws IOException{
 
         //waiting for clients
+        Server server = Server.getInstance();
+
         while(true) {
-            socket = server.accept();
+            server.socket = server.serverSocket.accept();
 
             System.out.println("New client connected");
 
-            ClientHandler client = new ClientHandler(socket);
+            ClientHandler client = new ClientHandler(server,server.socket);
 
-            clients.add(client);
+            server.clients.add(client);
 
             client.start();
         }

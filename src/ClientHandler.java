@@ -6,6 +6,7 @@ import java.util.*;
 
 public class ClientHandler extends Thread{
 
+    Server server;
     Socket socket;
     ObjectOutputStream output;
     DataInputStream dis;
@@ -19,8 +20,9 @@ public class ClientHandler extends Thread{
      *
      * @param socket
      */
-    ClientHandler(Socket socket){
+    ClientHandler(Server server, Socket socket){
 
+        this.server = server;
         this.socket = socket;
         date = new Date();
 
@@ -86,7 +88,7 @@ public class ClientHandler extends Thread{
         else {
             recipientName = msg.substring(msg.lastIndexOf("@") + 1);
             text = msg.substring(0, msg.lastIndexOf("@"));
-            recipient = Server.findClient(recipientName);
+            recipient = server.findClient(recipientName);
             System.out.println("before: " + recipientName);
             if (recipient == null) {
                 output.writeObject(new ErrorMessage());
@@ -111,7 +113,7 @@ public class ClientHandler extends Thread{
         dis.close();
         socket.close();
 
-        Server.removeClient(this);
+        server.removeClient(this);
     }
 
     /**
@@ -123,7 +125,7 @@ public class ClientHandler extends Thread{
 
         List<String> clientsNames = new LinkedList<>();
 
-        for (ClientHandler client : Server.getClients()) {
+        for (ClientHandler client : server.getClients()) {
             if (client.isLoggedIn){
                 clientsNames.add(client.name);
             }
@@ -140,7 +142,7 @@ public class ClientHandler extends Thread{
      * @throws IOException
      */
     public void broadcast(String text) throws IOException {
-        for (ClientHandler client : Server.getClients()) {
+        for (ClientHandler client : server.getClients()) {
             if (!client.name.equals(this.name))
                 sendMessage(text, client);
         }
