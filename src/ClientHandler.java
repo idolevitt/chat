@@ -33,6 +33,11 @@ public class ClientHandler extends Thread{
             dis = new DataInputStream(socket.getInputStream());
             output.writeObject(new WelcomeMessage());
             name = dis.readUTF();
+            while(name.equals("all") || server.findClient(name) != null){
+                output.writeObject(new CostumMessage("Name taken / invalid, pick another name"));
+                name = dis.readUTF();
+            }
+            output.writeObject(new CostumMessage("Hey " + name + "! Welcome to the server"));
         }
         catch (IOException i){
             i.printStackTrace();
