@@ -1,8 +1,9 @@
 package message;
 
+import java.io.Serializable;
 import java.util.List;
 
-public class OnlineClientsMessage extends Message {
+public class OnlineClientsMessage extends Message implements Serializable {
 
     List<String> clients;
 

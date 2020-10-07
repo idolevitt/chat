@@ -1,6 +1,4 @@
-import message.DateMessage;
 import message.Message;
-import message.OnlineClientsMessage;
 
 import java.net.*;
 import java.io.*;
@@ -8,8 +6,6 @@ import java.util.Scanner;
 
 public class Client {
 
-    final static String IP = "127.0.0.1";
-    final static int PORT = 5000;
     static Scanner scn;
     static Socket socket;
     static DataOutputStream dos;
@@ -36,12 +32,31 @@ public class Client {
 
         scn = new Scanner(System.in);
 
-        System.out.println("Connecting to server");
-        socket = new Socket(IP,PORT);
+        String ip;
+        int port;
+        System.out.println("Welcome! please fill in the following:");
+
+        while (true) {
+            try {
+                System.out.print("Server IP address:");
+                ip = scn.nextLine();
+                System.out.print("Port:");
+                port = Integer.parseInt(scn.nextLine());
+                System.out.println("Connecting to server");
+                socket = new Socket(ip, port);
+                break;
+            } catch (NumberFormatException n) {
+                System.out.println("Invalid input try again:\n");
+            } catch (SocketException s){
+                System.out.print("Server is unreachable\n");
+            } catch (UnknownHostException u){
+                System.out.print("Server is unreachable\n");
+            }
+        }
+
+
         dos = new DataOutputStream(socket.getOutputStream());
-        System.out.println("before");
         input = new ObjectInputStream(socket.getInputStream());
-        System.out.println("after");
         System.out.println("Connected");
 
         /**
@@ -91,9 +106,11 @@ public class Client {
                         msg.handleMessage();
                     }
                     catch (IOException i){
-                        i.printStackTrace();
+                        System.out.println("No connection with the server");
+                        break;
                     }
                     catch (ClassNotFoundException c){
+                        System.out.println("class");
                         c.printStackTrace();
                     }
 

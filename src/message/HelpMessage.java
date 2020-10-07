@@ -1,6 +1,8 @@
 package message;
 
-public class HelpMessage extends Message{
+import java.io.Serializable;
+
+public class HelpMessage extends Message implements Serializable {
 
     @Override
     public void handleMessage() {

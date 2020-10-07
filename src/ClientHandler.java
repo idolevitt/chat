@@ -31,13 +31,13 @@ public class ClientHandler extends Thread{
             output = new ObjectOutputStream(socket.getOutputStream());
             System.out.println("after");
             dis = new DataInputStream(socket.getInputStream());
-            output.writeObject(new WelcomeMessage());
+            output.writeObject(new CustomMessage("welcome! what's your name?"));
             name = dis.readUTF();
             while(name.equals("all") || server.findClient(name) != null){
-                output.writeObject(new CostumMessage("Name taken / invalid, pick another name"));
+                output.writeObject(new CustomMessage("Name taken / invalid, pick another name"));
                 name = dis.readUTF();
             }
-            output.writeObject(new CostumMessage("Hey " + name + "! Welcome to the server"));
+            output.writeObject(new CustomMessage("Hey " + name + "! Welcome to the server"));
         }
         catch (IOException i){
             i.printStackTrace();
@@ -59,7 +59,10 @@ public class ClientHandler extends Thread{
 
             }
             catch (IOException i){
-                i.printStackTrace();
+                try {
+                    disconnect();
+                } catch (IOException e) { }
+                
             }
         }
     }
@@ -111,6 +114,7 @@ public class ClientHandler extends Thread{
 
     /**
      * disconnect the current client
+     *
      */
     private void disconnect() throws IOException{
         isLoggedIn = false;

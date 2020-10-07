@@ -1,10 +1,12 @@
 package message;
 
-public class CostumMessage extends Message{
+import java.io.Serializable;
+
+public class CustomMessage extends Message implements Serializable {
 
     String text;
 
-    public CostumMessage(String text){
+    public CustomMessage(String text){
         this.text = text;
     }
 

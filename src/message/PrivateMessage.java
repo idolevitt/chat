@@ -1,6 +1,8 @@
 package message;
 
-public class PrivateMessage extends Message {
+import java.io.Serializable;
+
+public class PrivateMessage extends Message implements Serializable {
 
     String sender;
     String text;

@@ -6,21 +6,36 @@ public class Server{
 
     static Server serverInstance;
 
-    final static int PORT = 5000;
+    final static int PORT = 9000;
     private List<ClientHandler> clients;
     private ServerSocket serverSocket;
     private Socket socket;
 
+    /**
+     * @return a list of all the clients
+     */
     public List<ClientHandler> getClients() {
         return clients;
     }
 
+    /**
+     * Removing the client from the server's active clients list
+     *
+     * @param client
+     */
     public void removeClient(ClientHandler client){
         String name = client.name;
         clients.remove(client);
         System.out.println(name + " disconnected");
     }
 
+    /**
+     * Searches for a client and returns it ClientHandler
+     * or null if no such client exists
+     * @param name
+     * @return Client handler of the given name/ null
+     * if no such client exists
+     */
     public ClientHandler findClient(String name){
 
         for (ClientHandler client : clients  ) {
@@ -30,6 +45,10 @@ public class Server{
         return null;
     }
 
+    /**
+     * Private constructor
+     * @throws IOException
+     */
     private Server() throws IOException{
         //initializing server
         clients = new LinkedList<>();
@@ -38,6 +57,11 @@ public class Server{
 
     }
 
+    /**
+     * Singleton constructor
+     * @return Server instance
+     * @throws IOException
+     */
     public static Server getInstance() throws IOException{
 
         if (serverInstance == null)
