@@ -11,12 +11,39 @@ public class Server{
     private ServerSocket serverSocket;
     private Socket socket;
 
+
+    /**
+     * Private constructor
+     * @throws IOException
+     */
+    private Server() throws IOException{
+        //initializing server
+        clients = new LinkedList<>();
+        serverSocket = new ServerSocket(PORT);
+    }
+
+
+    /**
+     * Singleton constructor
+     * @return Server instance
+     * @throws IOException
+     */
+    public static Server getInstance() throws IOException{
+
+        if (serverInstance == null)
+            return new Server();
+        else
+            return serverInstance;
+    }
+
+
     /**
      * @return a list of all the clients
      */
     public List<ClientHandler> getClients() {
         return clients;
     }
+
 
     /**
      * Removing the client from the server's active clients list
@@ -28,6 +55,7 @@ public class Server{
         clients.remove(client);
         System.out.println(name + " disconnected");
     }
+
 
     /**
      * Searches for a client and returns it ClientHandler
@@ -43,31 +71,6 @@ public class Server{
                 return client;
         }
         return null;
-    }
-
-    /**
-     * Private constructor
-     * @throws IOException
-     */
-    private Server() throws IOException{
-        //initializing server
-        clients = new LinkedList<>();
-        serverSocket = new ServerSocket(PORT);
-
-
-    }
-
-    /**
-     * Singleton constructor
-     * @return Server instance
-     * @throws IOException
-     */
-    public static Server getInstance() throws IOException{
-
-        if (serverInstance == null)
-            return new Server();
-        else
-            return serverInstance;
     }
 
 

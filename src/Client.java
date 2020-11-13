@@ -62,33 +62,30 @@ public class Client {
         /**
          * Sending messages to the server
          */
-        Thread sendMsg = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                while (true){
+        Thread sendMsg = new Thread(() -> {
+            while (true){
 
-                    String line = scn.nextLine();
-                    if(line.toLowerCase().equals("log out")||
-                            line.toLowerCase().equals("disconnect")){
-                        try {
-                            disconnect();
-                        }
-                        catch (IOException i){
-                            i.printStackTrace();
-                        }
+                String line = scn.nextLine();
+                if(line.toLowerCase().equals("log out")||
+                        line.toLowerCase().equals("disconnect")){
+                    try {
+                        disconnect();
                     }
-                    else{
-                        try{
-                            dos.writeUTF(line);
-                        }
-                        catch (IOException i){
-                            i.printStackTrace();
-                        }
-
+                    catch (IOException i){
+                        i.printStackTrace();
                     }
                 }
+                else{
+                    try{
+                        dos.writeUTF(line);
+                    }
+                    catch (IOException i){
+                        i.printStackTrace();
+                    }
 
+                }
             }
+
         });
 
 
@@ -96,27 +93,24 @@ public class Client {
         /**
          * Waiting for messages from the server
          */
-        Thread receiveMsg = new Thread(new Runnable() {
-            @Override
-            public void run() {
+        Thread receiveMsg = new Thread(() -> {
 
-                while (true){
-                    try {
-                        Message msg = (Message) input.readObject();
-                        msg.handleMessage();
-                    }
-                    catch (IOException i){
-                        System.out.println("No connection with the server");
-                        break;
-                    }
-                    catch (ClassNotFoundException c){
-                        System.out.println("class");
-                        c.printStackTrace();
-                    }
-
+            while (true){
+                try {
+                    Message msg = (Message) input.readObject();
+                    msg.handleMessage();
+                }
+                catch (IOException i){
+                    System.out.println("No connection with the server");
+                    break;
+                }
+                catch (ClassNotFoundException c){
+                    System.out.println("class");
+                    c.printStackTrace();
                 }
 
             }
+
         });
 
         sendMsg.start();

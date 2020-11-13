@@ -27,9 +27,7 @@ public class ClientHandler extends Thread{
         date = new Date();
 
         try {
-            System.out.println("before");
             output = new ObjectOutputStream(socket.getOutputStream());
-            System.out.println("after");
             dis = new DataInputStream(socket.getInputStream());
             output.writeObject(new CustomMessage("welcome! what's your name?"));
             name = dis.readUTF();
