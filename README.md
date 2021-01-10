@@ -12,3 +12,5 @@
 4. Pick a nickname.</br>
 5. Start chatting and have fun!</br>
 </br>*Type "/help" to see the manual.
+
+<img src="images/chatGif.gif" width="100%">
