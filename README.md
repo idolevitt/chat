@@ -13,4 +13,4 @@
 5. Start chatting and have fun!</br>
 </br>*Type "/help" to see the manual.
 
-<img src="images/chatGif.gif" width="100%">
+<img src="chatGif.gif" width="100%">
